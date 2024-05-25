@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech</title>
+</head>
+<body>
+    <textarea placeholder="Enter text"></textarea>
+    <select id="voiceSelect"></select>
+    <select id="languageSelect"></select>
+    <button onclick="speak()">Speak</button>
+
+    <script>
+        let speech = new SpeechSynthesisUtterance();
+        let voices = [];
+        let voiceSelect = document.getElementById("voiceSelect");
+        let languageSelect = document.getElementById("languageSelect");
+    
+        window.speechSynthesis.onvoiceschanged = () => {
+            voices = window.speechSynthesis.getVoices();
+    
+            voices.forEach((voice, i) => {
+                voiceSelect.options[i] = new Option(voice.name, i);
+            });
+    
+            populateLanguages();
+        };
+    
+        function populateLanguages() {
+            console.log("Populating languages:", voices);
+            const uniqueLanguages = [...new Set(voices.map(voice => voice.lang))];
+            
+            uniqueLanguages.forEach((lang) => {
+                const languageName = lang.split('-')[0]; // Extract the language name from the language code
+                languageSelect.options.add(new Option(languageName, lang));
+            });
+        }
+    
+        function speak() {
+            speech.text = document.querySelector("textarea").value;
+            speech.voice = voices[voiceSelect.value];
+            speech.lang = languageSelect.value;
+    
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
+    </body>
+</html>
